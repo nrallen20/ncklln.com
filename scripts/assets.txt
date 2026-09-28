@@ -7,9 +7,9 @@
 # originals are kept locally in images-original/ (git-ignored).
 
 # --- shared ---
-ff2740_a7e56f268f034349b0b996577e6d0a75~mv2.png   icon-home.png
-ff2740_37bca90a72d44d2cafd922cc6bb4a2c2~mv2.png   icon-home-alt1.png
-ff2740_560177a2d3ef44958c6b614a59375ae5~mv2.png   icon-home-alt2.png
+ff2740_a7e56f268f034349b0b996577e6d0a75~mv2.png   icon-home-hover.png
+ff2740_37bca90a72d44d2cafd922cc6bb4a2c2~mv2.png   icon-home.png
+ff2740_560177a2d3ef44958c6b614a59375ae5~mv2.png   icon-home-pressed.png
 d8c511642aa5484397a1631593222d52.png              icon-snapchat.png
 48a2a42b19814efaa824450f23e8a253.png              icon-linkedin.png
 8d6893330740455c96d218258a458aa4.png              icon-instagram.png

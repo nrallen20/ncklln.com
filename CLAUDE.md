@@ -13,7 +13,8 @@ Rebuilt from the original Wix site (Sept 2026) so it can be edited directly with
 | `quibi-projects.html` | Quibi case study — same row pattern as `snap.html`. |
 | `bio.html` | About page: photo, intro, timeline, selected patents. |
 | `styles.css` | All styling. Design tokens live in `:root` at the top. |
-| `images/` | Every image the site uses. Populated by `scripts/fetch-assets.sh`; committed to git once downloaded. |
+| `images/` | Every image the site uses, committed to git. Opaque photos were re-encoded as JPEG and a few oversized files downsized; GIFs are the untouched Wix originals. |
+| `images-original/` | Full-size originals of everything re-encoded, straight from Wix. Git-ignored, local only — back it up somewhere; it's the only full-resolution copy once Wix is gone. |
 | `scripts/assets.txt` | Maps each original Wix media id → local filename (provenance only; safe to leave alone). |
 | `scripts/fetch-assets.sh` | One-time download of the originals from Wix's CDN. Idempotent. |
 
@@ -21,10 +22,12 @@ Rebuilt from the original Wix site (Sept 2026) so it can be edited directly with
 
 - **Content lives in the HTML.** There is no templating; edit the words where they appear.
 - **Shared header/footer** (inner pages only) is duplicated across `snap.html`, `snap-stories.html`, `quibi-projects.html`, `bio.html`. When changing it, change all four. The home page has no header/footer by design.
+- **Home button** (`.home-btn`) stacks three images — `icon-home.png` (resting), `icon-home-hover.png`, `icon-home-pressed.png` — and swaps them with `:hover` / `:active`, like the Wix image button did.
 - **Home cards** are `<section class="card">` blocks. Each sets its own colours via inline CSS custom properties:
   `--panel-bg` (left panel colour), `--panel-img` (optional image behind the copy), `--panel-ink` (text colour), `--media-bg` (right side background). Copy the Snapchat block to add a new one, and add a matching `<div class="gap">` chevron above it pointing at its `id`.
-- **Case-study rows** are `<section class="row">` with `.media` (left, ~790px) and `.copy` (right). Add a row by copying one.
-- **Fonts**: Josefin Sans (300/400) stands in for Brandon Grotesque, which Wix licensed and we can't ship. EB Garamond is the serif on the bio page. Both load from Google Fonts. Swap `--font-sans` / `--font-serif` in `styles.css` to change site-wide.
+- **Case-study rows** are `<section class="row">` with `.media` (left, 667px; images are cropped to 667×402 like on Wix) and `.copy` (right, 251px). Add a row by copying one.
+- **Sizes mirror the Wix site measured at 1440px**: home cards are 667px tall with a 619px (43%) panel; inner pages sit on Wix's 980px canvas.
+- **Fonts**: Josefin Sans (300, 300 italic, 600) from Google Fonts stands in for Brandon Grotesque, which Wix licensed and we can't ship — it has the same low x-height but sets ~10% wider, so a few paragraphs wrap one line longer than on Wix. The serif is Times New Roman, the system font Wix used. Swap `--font-sans` / `--font-serif` in `styles.css` to change site-wide.
 - **Images**: reference as `images/<name>`. Prefer descriptive kebab-case names. Large screenshots should be ≤ 2800px wide; compress PNGs before committing when convenient (`pngquant`, ImageOptim, etc.).
 - Keep the page working with **no JavaScript** — there currently is none, and nothing needs it.
 - Test at phone width (≈400px). Cards stack to one column under 900px.
@@ -53,5 +56,5 @@ Any static host works. Recommended: **Cloudflare Pages** or **Netlify** (both fr
 - Bio timeline was "2020 – Present: Route" on Wix; updated to Route 2020–2024, HeyGen 2024–Present. Check dates.
 - Patent links on Wix were broken (three pointed at one PDF). Now each links to `patents.google.com/patent/<id>`. `US18095473` is an application number and isn't linked.
 - "shoot me an email" on the home page now links to `mailto:nrallen2013@gmail.com` (Wix version had no link).
-- Two Wix images weren't used anywhere visible (`icon-home-alt1/2.png`) — probably hover states of the home icon. Kept in the manifest, unused.
-- Wix served the home-page background as a 1919px-wide tile of greyscale logos (`images/bg-logos.png`). It's repeated with CSS; the original tiled the same way.
+- Wix served the home-page background as a 1919px-wide tile of greyscale logos (`images/bg-logos.png`), fixed behind the page at 9% opacity over black. `body.home::before` does the same.
+- Wix's mobile site hid the Snapchat, Quibi and Route images; here every card stacks its panel above its image instead.
