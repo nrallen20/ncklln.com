@@ -42,16 +42,17 @@ python3 -m http.server 8000     # then http://localhost:8000
 
 ## Deploy
 
-Hosted on **Netlify**, deployed from the private GitHub repo `nrallen20/ncklln.com` (personal account). Every push to `main` redeploys in ~30s. There's no build command; the repo root is published, and `_redirects` keeps `CLAUDE.md`, `README.md` and `scripts/` off the public site.
+Hosted on **GitHub Pages** from the public repo `nrallen20/ncklln.com` (personal account), branch `main`, root folder. Every push to `main` goes live in about a minute. There's no build step: `.nojekyll` makes Pages serve the files as-is, and `CNAME` holds the custom domain, `www.ncklln.com`. The bare `ncklln.com` redirects to it, as it did on Wix.
 
+- **Why the repo is public:** GitHub Pages on a free account only publishes public repos. Everything here is either on the live site already or harmless notes; `images-original/` is git-ignored.
 - **Why not Cloudflare Pages:** a custom apex domain there needs Cloudflare nameservers, and Wix doesn't allow nameserver changes on domains bought through Wix.
 - **Git auth:** this laptop's `gh` is signed in to two accounts and the work one (`nickallen-heygen`) stays active. This repo's `.git/config` has a credential helper that always uses `nrallen20`'s token (`gh auth token --user nrallen20`), so pushes work whichever account is active. On a new machine, `gh auth login` as `nrallen20` and re-add that helper.
 - **DNS** lives in Wix → Settings → Domains → ncklln.com → **Manage DNS records**:
-  - `A` record, host `@` → `75.2.60.5` (Netlify's load balancer), replacing Wix's A records
-  - `CNAME` record, host `www` → the site's `*.netlify.app` address, replacing Wix's `www` CNAME
+  - four `A` records, host `@`: `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153` (they replace Wix's A records)
+  - `CNAME` record, host `www` → `nrallen20.github.io` (replaces Wix's `www` CNAME)
 
-  Netlify issues the HTTPS certificate automatically once those resolve.
-- The domain registration stays with Wix (paid through 2029). Once the site answers at ncklln.com, the Wix Premium plan can be cancelled.
+  GitHub issues the HTTPS certificate once those resolve; then turn on **Enforce HTTPS** in the repo's Settings → Pages (it can take up to 24 hours to become available).
+- The domain registration stays with Wix (paid through 2029) and renews separately from the site plan. Once the site answers at ncklln.com, the Wix Premium plan can be cancelled.
 
 ## Things left over from the migration
 
