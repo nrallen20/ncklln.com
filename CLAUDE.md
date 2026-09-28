@@ -28,6 +28,7 @@ Rebuilt from the original Wix site (Sept 2026) so it can be edited directly with
 - **Case-study rows** are `<section class="row">` with `.media` (left, 667px; images are cropped to 667×402 like on Wix) and `.copy` (right, 251px). Add a row by copying one.
 - **Sizes mirror the Wix site measured at 1440px**: home cards are 667px tall with a 619px (43%) panel; inner pages sit on Wix's 980px canvas.
 - **Fonts**: Josefin Sans (300, 300 italic, 600) from Google Fonts stands in for Brandon Grotesque, which Wix licensed and we can't ship — it has the same low x-height but sets ~10% wider, so a few paragraphs wrap one line longer than on Wix. The serif is Times New Roman, the system font Wix used. Swap `--font-sans` / `--font-serif` in `styles.css` to change site-wide.
+- **Source exports** (e.g. from Figma) get saved into the repo root. Image files there are git-ignored; make a right-sized copy in `images/` and reference that.
 - **Images**: reference as `images/<name>`. Prefer descriptive kebab-case names. Large screenshots should be ≤ 2800px wide; compress PNGs before committing when convenient (`pngquant`, ImageOptim, etc.).
 - Keep the page working with **no JavaScript** — there currently is none, and nothing needs it.
 - Test at phone width (≈400px). Cards stack to one column under 900px.

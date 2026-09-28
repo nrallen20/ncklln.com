@@ -4,3 +4,10 @@ Thumbs.db
 node_modules/
 images-original/
 .claude/
+# Figma exports land in the repo root; the site uses resized copies in images/
+/*.png
+/*.jpg
+/*.jpeg
+/*.webp
+/*.svg
+/*.gif

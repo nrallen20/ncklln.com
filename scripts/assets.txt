@@ -3,7 +3,7 @@
 # Run scripts/fetch-assets.sh once to download everything into images/.
 
 # Wix originals of the *.jpg entries below are PNGs; the committed copies were re-encoded
-# (and bio-photo / snap-phones / heygen-avatars / route-phone downsized). Full-size
+# (and bio-photo / snap-phones / route-phone downsized). Full-size
 # originals are kept locally in images-original/ (git-ignored).
 
 # --- shared ---
@@ -26,8 +26,6 @@ ff2740_404d47a7f16c4e42918eacb28a5183a1~mv2.png   route-bg.jpg
 ff2740_c31e7b600f914b14be55e585c1ac1004~mv2.png   route-logo.png
 ff2740_c348d3991ee7474c97ed5e84cbace9fb~mv2.png   route-map.jpg
 ff2740_8c80432c0e3d404b8b0e45d152e026c0~mv2.png   route-phone.png
-ff2740_118a8fd144114be7918bf5d00fdbff8f~mv2.png   heygen-logo.png
-ff2740_1eb97988302d47cf9579cb8ca194334e~mv2.png   heygen-avatars.jpg
 11062b_4b7c9a8e48334d5aad2fd274fddba3bc~mv2.jpg   advising-bg.jpg
 ff2740_7352c6d8ef5e4b4a842aa6d41478a897~mv2.png   apps-grayscale.png
 ff2740_710942ba168a42e0bab701ee0ea0ce32~mv2.png   apps-color.png
