@@ -1,0 +1,53 @@
+# Wix media id  ->  local filename (under images/)
+# Original, full-resolution files live at https://static.wixstatic.com/media/<id>
+# Run scripts/fetch-assets.sh once to download everything into images/.
+
+# --- shared ---
+ff2740_a7e56f268f034349b0b996577e6d0a75~mv2.png   icon-home.png
+ff2740_37bca90a72d44d2cafd922cc6bb4a2c2~mv2.png   icon-home-alt1.png
+ff2740_560177a2d3ef44958c6b614a59375ae5~mv2.png   icon-home-alt2.png
+ff2740_d8c511642aa5484397a1631593222d52~mv2.png   icon-snapchat.png
+ff2740_48a2a42b19814efaa824450f23e8a253~mv2.png   icon-linkedin.png
+ff2740_8d6893330740455c96d218258a458aa4~mv2.png   icon-instagram.png
+ff2740_1d7d755bd5bb47b8914ec3fcf6ffad3c~mv2.png   bg-logos.png
+
+# --- home ---
+ff2740_13fbb9d079b0404f94bdb36a32e3c798~mv2.png   logo-nicks-portfolio.png
+ff2740_905caeaade7f426b9e83a0ce40848ba0~mv2.png   snap-logo.png
+ff2740_4825380d87f34b9d8072c272995572fb~mv2.png   snap-phones.png
+ff2740_c314a4c4295f43ab95a6cb5753e4bffe~mv2.png   quibi-bg.png
+ff2740_a35637eb2e004702b5807d8e4c4330ed~mv2.png   quibi-logo.png
+ff2740_8528be6f7a6d4fe7b966ade19471a6ed~mv2.jpg   quibi-phones.jpg
+ff2740_404d47a7f16c4e42918eacb28a5183a1~mv2.png   route-bg.png
+ff2740_c31e7b600f914b14be55e585c1ac1004~mv2.png   route-logo.png
+ff2740_c348d3991ee7474c97ed5e84cbace9fb~mv2.png   route-map.png
+ff2740_8c80432c0e3d404b8b0e45d152e026c0~mv2.png   route-phone.png
+ff2740_118a8fd144114be7918bf5d00fdbff8f~mv2.png   heygen-logo.png
+ff2740_1eb97988302d47cf9579cb8ca194334e~mv2.png   heygen-avatars.png
+11062b_4b7c9a8e48334d5aad2fd274fddba3bc~mv2.jpg   advising-bg.jpg
+ff2740_7352c6d8ef5e4b4a842aa6d41478a897~mv2.png   apps-grayscale.png
+ff2740_710942ba168a42e0bab701ee0ea0ce32~mv2.png   apps-color.png
+ff2740_4b8509fca41b403ca8548fb60ce7c271~mv2.png   dog-field.png
+
+# --- snap ---
+ff2740_cf62184fa8294ab6bd4bbd4f9d690e29~mv2.png   snap-stories.png
+ff2740_ae5c4129e56249e9957397b4790c58f5~mv2.gif   snap-system-design.gif
+ff2740_1debb2c047a44514a99cb3b06a6385e7~mv2.gif   snap-other-stories.gif
+ff2740_a0b86edf096842df92bd6e6fe87fd8dc~mv2.png   snap-geofilters.png
+
+# --- snap-stories ---
+ff2740_9a0da57e2f834d94bf69b2a90b3a172c~mv2.png   stories-v1.png
+ff2740_ab578030d8c3421bb17871bafe95d759~mv2.png   stories-evolution.png
+ff2740_73ddb9728c824e1f9268b561c3a278eb~mv2.png   stories-spec.png
+ff2740_8c981bcf507241e796162acd0599d519~mv2.png   stories-today.png
+
+# --- quibi ---
+ff2740_13861ab5a8c7408cb4b0e66267ead64a~mv2.png   quibi-app-icon.png
+ff2740_c4a96d0ffc07454cb75e9ea47e022c51~mv2.png   quibi-video-player.png
+ff2740_fd7af6c70c20460f90e662249fe1cdbc~mv2.gif   quibi-home-feed.gif
+ff2740_b02fc14ffed741efa9f9129add1145b8~mv2.png   quibi-living-room.png
+ff2740_f58ef264bfe34f2681f164fec22c5943~mv2.gif   quibi-end-browse.gif
+ff2740_61df4c2d66fe4c789c4403c497bd95d0~mv2.png   quibi-cast-crew.png
+
+# --- bio ---
+ff2740_111c46541c2945a8ae52d5f5f00d44d0~mv2.png   bio-photo.png

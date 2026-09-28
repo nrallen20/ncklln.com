@@ -1,0 +1,301 @@
+/* ==========================================================================
+   ncklln.com — global stylesheet
+   Edit the tokens in :root to change the whole site's look.
+   ========================================================================== */
+
+:root {
+  /* Type. Brandon Grotesque (the Wix font) isn't free; Josefin Sans is the
+     closest open substitute. Swap --font-sans to change everything at once. */
+  --font-sans: "Josefin Sans", "Brandon Grotesque", "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "EB Garamond", Georgia, "Times New Roman", serif;
+
+  /* Colors */
+  --ink: #212121;          /* dark card background on the home page */
+  --ink-2: #414141;        /* highlight behind the "you've reached the bottom" text */
+  --paper: #ffffff;
+  --text-light: #d4d4d4;   /* body text on dark */
+  --text-dark: #212121;    /* body text on light */
+  --text-mid: #6b6b6b;     /* de-emphasised labels (bio page) */
+  --rule: #d6d6d4;
+
+  --snap-yellow: #fffa37;
+  --quibi-purple: #7a2ff7;
+  --route-blue: #3fa9e0;
+  --advising-lilac: #cfc7f2;
+
+  /* Layout */
+  --panel-split: 43%;      /* width of the coloured left panel on home cards */
+  --card-h: clamp(440px, 26vw, 667px);
+  --gap-h: clamp(160px, 16vw, 410px); /* space between cards (holds the chevron) */
+  --column: 1120px;        /* content width on case-study pages */
+  --media-w: 790px;        /* width of the image column on case-study pages */
+}
+
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--text-dark);
+  background: var(--paper);
+}
+
+img { display: block; max-width: 100%; height: auto; }
+
+a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+a:hover { opacity: .75; }
+
+p { margin: 0 0 1.1em; }
+p:last-child { margin-bottom: 0; }
+
+h1, h2, h3 { font-weight: 300; margin: 0 0 .9em; }
+
+.eyebrow {
+  font-size: 20px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: .9em;
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Home page
+   -------------------------------------------------------------------------- */
+body.home {
+  background: var(--ink) url("images/bg-logos.png") center top / 1919px auto repeat;
+  color: var(--text-light);
+}
+
+/* Intro card: logo + one paragraph, full width, dark */
+.intro {
+  background: var(--ink);
+  padding: clamp(56px, 6vw, 96px) 24px;
+  text-align: center;
+}
+.intro img.logo {
+  width: min(515px, 80vw);
+  margin: 0 auto clamp(28px, 3vw, 48px);
+  image-rendering: pixelated; /* it's pixel art — keep the edges crisp */
+}
+.intro p {
+  max-width: 560px;
+  margin: 0 auto;
+  font-size: 14px;
+  line-height: 1.6;
+  letter-spacing: .02em;
+}
+
+/* Spacer between cards with a down-chevron in the middle */
+.gap {
+  height: var(--gap-h);
+  display: grid;
+  place-items: center;
+}
+.gap a {
+  display: block;
+  width: 56px; height: 56px;
+  text-decoration: none;
+  opacity: .8;
+}
+.gap a:hover { opacity: 1; }
+.gap svg { width: 100%; height: 100%; display: block; }
+
+/* Work card: coloured left panel with copy, image on the right */
+.card {
+  display: grid;
+  grid-template-columns: var(--panel-split) 1fr;
+  min-height: var(--card-h);
+  scroll-margin-top: 0;
+}
+.card .panel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 48px 32px 48px clamp(24px, 30%, 400px);
+  background: var(--panel-bg, var(--ink));
+  color: var(--panel-ink, var(--text-light));
+  overflow: hidden;
+}
+.card .panel::before {           /* optional background image behind the copy */
+  content: "";
+  position: absolute; inset: 0;
+  background: var(--panel-img, none) center / cover no-repeat;
+  z-index: 0;
+}
+.card .panel > .copy { position: relative; z-index: 1; max-width: 400px; }
+.card .copy .eyebrow { margin-bottom: 1em; }
+.card .copy p { font-size: 17px; line-height: 1.5; }
+.card .copy .mark {              /* small brand logo under the copy */
+  margin-top: 28px;
+  height: 44px; width: auto;
+}
+.card .copy .mark.wide { height: 60px; }
+
+.card .media {
+  position: relative;
+  min-height: 320px;
+  background: var(--media-bg, #000) center / cover no-repeat;
+  overflow: hidden;
+}
+.card .media > img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.card .media > img.contain { object-fit: contain; }
+.card .media > img.overlay {      /* e.g. the Route phone sitting on the map */
+  left: auto; right: 6%; top: 50%; transform: translateY(-50%);
+  width: auto; height: 100%; object-fit: contain;
+}
+
+/* Design-advising app grid: greyscale that colours in on hover */
+.card .media.apps { display: grid; place-items: center; }
+.card .media.apps .stack {
+  position: relative; width: min(600px, 80%); aspect-ratio: 1;
+}
+.card .media.apps .stack img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; transition: opacity .35s ease; }
+.card .media.apps .stack img.color { opacity: 0; }
+.card .media.apps .stack:hover img.color { opacity: 1; }
+
+/* Bottom card */
+.card.outro .panel { --panel-bg: var(--ink); --panel-ink: var(--text-light); }
+.card.outro .copy p { font-size: 15px; }
+.card.outro .copy .hl {
+  background: var(--ink-2);
+  padding: 2px 4px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.card.outro .copy .hl.big { font-size: 20px; letter-spacing: .5px; }
+
+/* --------------------------------------------------------------------------
+   Case-study pages (snap, quibi, stories) and bio
+   -------------------------------------------------------------------------- */
+.page {
+  width: min(var(--column), 100% - 48px);
+  margin: 0 auto;
+  padding: 24px 0 64px;
+}
+
+.site-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 48px;
+  font-size: 14px;
+}
+.site-header a { text-decoration: none; display: inline-flex; align-items: center; gap: 12px; }
+.site-header img { width: 40px; height: 40px; border-radius: 50%; }
+
+/* Centered page intro with a logo */
+.lede {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 64px;
+  font-size: 15px;
+  line-height: 1.6;
+}
+.lede img { width: 88px; height: auto; margin: 0 auto 32px; }
+.lede img.rounded { width: 88px; border-radius: 22%; }
+
+/* Alternating media / copy rows */
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, var(--media-w)) 1fr;
+  gap: 28px;
+  align-items: start;
+  margin-bottom: 64px;
+}
+.row .media img { width: 100%; }
+.row .copy { padding-top: 8px; font-size: 14px; line-height: 1.55; }
+.row .copy .eyebrow { font-size: 15px; letter-spacing: .5px; margin-bottom: 1.4em; }
+.row .copy .eyebrow.plain { text-transform: none; letter-spacing: 0; }
+
+/* Long-form article (snap-stories) */
+.article {
+  max-width: 780px;
+  margin: 0 auto;
+  font-size: 17px;
+  line-height: 1.6;
+}
+.article .crumbs { font-size: 13px; margin-bottom: 28px; }
+.article figure { margin: 36px 0; }
+.article figure img { margin: 0 auto; }
+.article figure.narrow img { max-width: 420px; }
+
+/* Footer shared by the inner pages */
+.site-footer {
+  margin-top: 48px;
+  text-align: center;
+}
+.site-footer .social {
+  display: flex; justify-content: center; gap: 8px;
+  margin-bottom: 20px;
+}
+.site-footer .social img { width: 22px; height: 22px; }
+.site-footer .home img { width: 40px; height: 40px; border-radius: 50%; margin: 0 auto; }
+
+/* Bio */
+.bio {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+.bio .photo img { width: 100%; filter: grayscale(1); }
+.bio .hello { font-size: 14px; margin-bottom: 28px; }
+.bio h1 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(24px, 2.4vw, 34px);
+  line-height: 1.25;
+  margin-bottom: 20px;
+}
+.bio .about { font-size: 14px; max-width: 600px; }
+.bio .email { margin-top: 40px; font-size: 13px; display: inline-flex; align-items: center; gap: 10px; }
+.bio .email svg { width: 16px; height: 16px; }
+.bio hr { border: 0; border-top: 1px solid var(--rule); margin: 40px 0 28px; }
+.bio h2 {
+  font-size: 13px; font-weight: 300; text-decoration: underline;
+  margin: 0 0 20px; color: var(--text-mid);
+}
+.bio h2 a { text-decoration: underline; }
+.bio dl { display: grid; grid-template-columns: max-content 1fr; gap: 14px 24px; margin: 0 0 40px; font-size: 13px; }
+.bio dl.timeline dt { font-family: var(--font-serif); font-style: italic; font-size: 14px; }
+.bio dl dd { margin: 0; color: var(--text-mid); }
+.bio dl.patents dt { font-family: var(--font-serif); font-style: italic; font-size: 13px; }
+.bio dl.patents dd { font-size: 12px; text-transform: uppercase; letter-spacing: .2px; }
+.bio dl.patents dd .nick { text-transform: none; }
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .card { grid-template-columns: 1fr; min-height: 0; }
+  .card .panel { padding: 48px 28px; min-height: 360px; }
+  .card .media { aspect-ratio: 4 / 3; min-height: 0; }
+  .card .media > img.overlay { right: 4%; }
+  :root { --gap-h: 140px; }
+
+  .row { grid-template-columns: 1fr; gap: 20px; margin-bottom: 56px; }
+  .bio { grid-template-columns: 1fr; }
+  .bio .photo img { max-width: 300px; }
+}
+
+@media (max-width: 520px) {
+  body { font-size: 16px; }
+  .intro img.logo { width: 88vw; }
+  .card .copy p { font-size: 16px; }
+  .bio dl { grid-template-columns: 1fr; gap: 4px 0; }
+  .bio dl dd { margin-bottom: 12px; }
+}

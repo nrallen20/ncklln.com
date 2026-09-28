@@ -1,0 +1,57 @@
+# ncklln.com — Nick Allen's portfolio
+
+Static site. Plain HTML + one CSS file. No build step, no dependencies, nothing to install.
+Rebuilt from the original Wix site (Sept 2026) so it can be edited directly with Claude Code.
+
+## Layout of the repo
+
+| Path | What it is |
+|---|---|
+| `index.html` | Home. Dark page with a stack of full-width "cards" (Snapchat, Quibi, Route, HeyGen, Design Advising, outro). |
+| `snap.html` | Snapchat case study — alternating image / copy rows. |
+| `snap-stories.html` | Long-form article on designing Stories v1. Linked from `snap.html`. |
+| `quibi-projects.html` | Quibi case study — same row pattern as `snap.html`. |
+| `bio.html` | About page: photo, intro, timeline, selected patents. |
+| `styles.css` | All styling. Design tokens live in `:root` at the top. |
+| `images/` | Every image the site uses. Populated by `scripts/fetch-assets.sh`; committed to git once downloaded. |
+| `scripts/assets.txt` | Maps each original Wix media id → local filename (provenance only; safe to leave alone). |
+| `scripts/fetch-assets.sh` | One-time download of the originals from Wix's CDN. Idempotent. |
+
+## Conventions
+
+- **Content lives in the HTML.** There is no templating; edit the words where they appear.
+- **Shared header/footer** (inner pages only) is duplicated across `snap.html`, `snap-stories.html`, `quibi-projects.html`, `bio.html`. When changing it, change all four. The home page has no header/footer by design.
+- **Home cards** are `<section class="card">` blocks. Each sets its own colours via inline CSS custom properties:
+  `--panel-bg` (left panel colour), `--panel-img` (optional image behind the copy), `--panel-ink` (text colour), `--media-bg` (right side background). Copy the Snapchat block to add a new one, and add a matching `<div class="gap">` chevron above it pointing at its `id`.
+- **Case-study rows** are `<section class="row">` with `.media` (left, ~790px) and `.copy` (right). Add a row by copying one.
+- **Fonts**: Josefin Sans (300/400) stands in for Brandon Grotesque, which Wix licensed and we can't ship. EB Garamond is the serif on the bio page. Both load from Google Fonts. Swap `--font-sans` / `--font-serif` in `styles.css` to change site-wide.
+- **Images**: reference as `images/<name>`. Prefer descriptive kebab-case names. Large screenshots should be ≤ 2800px wide; compress PNGs before committing when convenient (`pngquant`, ImageOptim, etc.).
+- Keep the page working with **no JavaScript** — there currently is none, and nothing needs it.
+- Test at phone width (≈400px). Cards stack to one column under 900px.
+
+## Preview locally
+
+Open `index.html` in a browser. Or, for correct relative paths and live reload:
+
+```
+python3 -m http.server 8000     # then http://localhost:8000
+```
+
+## Deploy
+
+Any static host works. Recommended: **Cloudflare Pages** or **Netlify** (both free for this).
+
+1. Push this folder to a GitHub repo (personal account, not work).
+2. In Cloudflare Pages / Netlify: "New project → connect repo". Build command: *none*. Output directory: `/` (root).
+3. Every push to `main` redeploys in ~30s.
+4. Custom domain: add `ncklln.com` and `www.ncklln.com` in the host's dashboard. It will give you DNS records (a CNAME for `www`, and an A/CNAME or "flattened" record for the apex).
+5. In Wix → Settings → Domains → ncklln.com → **Manage DNS records**: replace Wix's A record(s) and the `www` CNAME with the ones from step 4. Leave everything else. Propagation takes minutes to a few hours.
+6. Once the new site answers at ncklln.com, the Wix Premium plan can be cancelled. The domain registration itself stays with Wix (paid through 2029).
+
+## Things left over from the migration
+
+- Bio timeline was "2020 – Present: Route" on Wix; updated to Route 2020–2024, HeyGen 2024–Present. Check dates.
+- Patent links on Wix were broken (three pointed at one PDF). Now each links to `patents.google.com/patent/<id>`. `US18095473` is an application number and isn't linked.
+- "shoot me an email" on the home page now links to `mailto:nrallen2013@gmail.com` (Wix version had no link).
+- Two Wix images weren't used anywhere visible (`icon-home-alt1/2.png`) — probably hover states of the home icon. Kept in the manifest, unused.
+- Wix served the home-page background as a 1919px-wide tile of greyscale logos (`images/bg-logos.png`). It's repeated with CSS; the original tiled the same way.
