@@ -42,14 +42,16 @@ python3 -m http.server 8000     # then http://localhost:8000
 
 ## Deploy
 
-Any static host works. Recommended: **Cloudflare Pages** or **Netlify** (both free for this).
+Hosted on **Netlify**, deployed from the private GitHub repo `nrallen20/ncklln.com` (personal account). Every push to `main` redeploys in ~30s. There's no build command; the repo root is published, and `_redirects` keeps `CLAUDE.md`, `README.md` and `scripts/` off the public site.
 
-1. Push this folder to a GitHub repo (personal account, not work).
-2. In Cloudflare Pages / Netlify: "New project → connect repo". Build command: *none*. Output directory: `/` (root).
-3. Every push to `main` redeploys in ~30s.
-4. Custom domain: add `ncklln.com` and `www.ncklln.com` in the host's dashboard. It will give you DNS records (a CNAME for `www`, and an A/CNAME or "flattened" record for the apex).
-5. In Wix → Settings → Domains → ncklln.com → **Manage DNS records**: replace Wix's A record(s) and the `www` CNAME with the ones from step 4. Leave everything else. Propagation takes minutes to a few hours.
-6. Once the new site answers at ncklln.com, the Wix Premium plan can be cancelled. The domain registration itself stays with Wix (paid through 2029).
+- **Why not Cloudflare Pages:** a custom apex domain there needs Cloudflare nameservers, and Wix doesn't allow nameserver changes on domains bought through Wix.
+- **Git auth:** this laptop's `gh` is signed in to two accounts and the work one (`nickallen-heygen`) stays active. This repo's `.git/config` has a credential helper that always uses `nrallen20`'s token (`gh auth token --user nrallen20`), so pushes work whichever account is active. On a new machine, `gh auth login` as `nrallen20` and re-add that helper.
+- **DNS** lives in Wix → Settings → Domains → ncklln.com → **Manage DNS records**:
+  - `A` record, host `@` → `75.2.60.5` (Netlify's load balancer), replacing Wix's A records
+  - `CNAME` record, host `www` → the site's `*.netlify.app` address, replacing Wix's `www` CNAME
+
+  Netlify issues the HTTPS certificate automatically once those resolve.
+- The domain registration stays with Wix (paid through 2029). Once the site answers at ncklln.com, the Wix Premium plan can be cancelled.
 
 ## Things left over from the migration
 

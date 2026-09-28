@@ -1,0 +1,5 @@
+# Netlify publishes the whole repo; keep the notes and tooling off the public site.
+/CLAUDE.md    /404.html  404!
+/README.md    /404.html  404!
+/scripts/*    /404.html  404!
+/.gitignore   /404.html  404!
