@@ -5,10 +5,10 @@
    ========================================================================== */
 
 :root {
-  /* Type. Brandon Grotesque (the Wix font) isn't free; Josefin Sans is the
-     closest open substitute — same low x-height, sets ~10% wider.
-     Swap --font-sans to change everything at once. */
-  --font-sans: "Josefin Sans", "Brandon Grotesque", "Helvetica Neue", Arial, sans-serif;
+  /* Type. Inter, regular weight for body text. Brandon Grotesque (the Wix font) isn't
+     licensed here, and the light geometric substitutes read too thin.
+     Swap --font-sans (and the Google Fonts link in each page) to change everything at once. */
+  --font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
   --font-serif: "Times New Roman", Times, serif;
 
   /* Colors */
@@ -26,6 +26,10 @@
   --quibi-purple: #7a2ff7;
   --route-blue: #3fa9e0;
   --advising-lilac: #cfc7f2;
+  /* dark backdrop behind HeyGen screenshots, tinted with the logo's pink and cyan */
+  --heygen-bg: radial-gradient(90% 70% at 12% 0%, rgb(240 160 255 / .16), transparent 70%),
+               radial-gradient(90% 80% at 95% 100%, rgb(0 224 255 / .16), transparent 70%),
+               linear-gradient(135deg, #17142a, #0d1f26);
 
   /* Home layout */
   --panel-split: 43%;                      /* width of the coloured left panel on home cards */
@@ -48,14 +52,14 @@ html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
 body {
   margin: 0;
   font-family: var(--font-sans);
-  font-weight: 300;
+  font-weight: 400;
   font-size: 16px;
   line-height: 1.45;
   color: var(--black);
   background: #fff;
 }
 
-img { display: block; max-width: 100%; height: auto; }
+img, video { display: block; max-width: 100%; height: auto; }
 
 a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
 a:hover { opacity: .75; }
@@ -64,7 +68,16 @@ a:hover { opacity: .75; }
 p { margin: 0 0 1.45em; }
 p:last-child { margin-bottom: 0; }
 
-h1, h2, h3 { font-weight: 300; margin: 0; }
+h1, h2, h3 { font-weight: 400; margin: 0; }
+
+.placeholder { color: var(--text-faint); }
+
+/* Password gate, no JavaScript: the page is hidden until the input matches its pattern attribute */
+.gate { min-height: 100vh; display: grid; place-content: center; gap: 14px; text-align: center; font-size: 15px; color: var(--text-body); }
+.gate input { width: 240px; padding: 10px 12px; font: inherit; color: inherit; border: 1px solid var(--rule); border-radius: 6px; outline: none; box-shadow: none; }
+.gate input:focus { border-color: var(--text-body); }
+body:has(.gate input:invalid) .page { display: none; }
+body:has(.gate input:valid) .gate { display: none; }
 
 .sr-only {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
@@ -267,11 +280,25 @@ a:active .home-btn img.pressed { opacity: 1; }
   margin-bottom: 51px;
 }
 .row:last-of-type { margin-bottom: 0; }
-.row .media img { width: 100%; aspect-ratio: 667 / 402; object-fit: cover; }
+.row .media :is(img, video) { width: 100%; aspect-ratio: 667 / 402; object-fit: cover; }
+/* Uncropped screenshot or recording centred on the HeyGen backdrop, for media that isn't 667×402 */
+.row .media.framed {
+  position: relative;
+  aspect-ratio: 667 / 402;
+  background: var(--heygen-bg);
+}
+.row .media.framed :is(img, video) {
+  position: absolute; top: 24px; left: 50%;
+  transform: translateX(-50%);
+  width: auto; height: calc(100% - 48px); max-width: calc(100% - 48px);
+  aspect-ratio: auto; object-fit: contain;
+}
+.row .media.framed .phone { border-radius: 14% / 6.5%; }
 .row .copy { padding-top: 17px; font-size: 14px; line-height: 1.4; color: var(--text-body); }
 .row .copy p { margin-bottom: 1.4em; }
 .row .copy .eyebrow { font-size: 14px; line-height: 20px; text-transform: uppercase; margin-bottom: 31px; }
 .row .copy .eyebrow.plain { text-transform: none; margin-bottom: 14px; }
+.row .copy .cta { display: inline-block; font-weight: 600; }
 
 /* Long-form article (snap-stories), aligned with the header text */
 .article {
@@ -286,6 +313,60 @@ a:active .home-btn img.pressed { opacity: 1; }
 .article p + p { margin-top: 1.2em; }
 .article figure { margin: 45px 0 35px; }
 .article figure img { width: var(--w, 100%); }
+
+/* Case studies: the article layout plus a title, section headings and framed media */
+.article h1 { font-size: 40px; line-height: 1.1; margin-bottom: 10px; }
+.article .kicker, .article h2 { font-size: 15px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); }
+.article .kicker { margin-bottom: 40px; }
+.article h2 { margin: 64px 0 18px; }
+.article h3 { font-size: 26px; line-height: 1.2; margin: 56px 0 14px; }
+.article p strong { font-weight: 600; }
+.article p.cap { font-size: 14px; color: var(--text-muted); text-align: center; margin: -22px 0 0; }
+.article ul { margin: 0; padding-left: 1.1em; }
+.article li + li { margin-top: .6em; }
+.article .button { display: inline-block; padding: 12px 22px; border: 1px solid var(--text-body); border-radius: 999px; text-decoration: none; font-weight: 600; font-size: 17px; transition: background .2s, color .2s; }
+.article .button:hover { background: var(--text-body); color: #fff; opacity: 1; }
+
+/* Case-study layout (heygen-*.html): a big title at the page edge, a two-column intro,
+   media running the full page width, large section heads, results as a row of numbers */
+.page.wide .article.case { width: 100%; font-size: 20px; line-height: 1.5; margin-top: 48px; }
+.article.case .crumbs { margin-bottom: 40px; }
+.article.case h1 { font-size: clamp(44px, 5.7vw, 82px); line-height: 1.02; letter-spacing: -.02em; font-weight: 500; color: var(--black); max-width: 1100px; margin: 0 0 56px; }
+.case .overview { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-bottom: 72px; }
+.case .overview h2, .case .facts b { font-size: 13px; letter-spacing: 1px; text-transform: uppercase; font-weight: 500; color: var(--text-muted); }
+.case .overview h2 { margin: 0 0 16px; }
+.case .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 40px; font-size: 16px; line-height: 1.4; color: var(--black); }
+.case .facts b { display: block; margin-bottom: 6px; }
+.case section { margin-top: 112px; }
+.case section h2 { font-size: clamp(30px, 2.8vw, 40px); line-height: 1.15; letter-spacing: -.015em; text-transform: none; font-weight: 600; color: var(--black); margin: 0 0 28px; max-width: 900px; }
+.case .text { max-width: 760px; }
+.article.case p { margin: 0 0 1.2em; }
+.article.case p + p { margin-top: 0; }
+.article.case .text > :last-child { margin-bottom: 0; }
+.article.case figure { margin: 48px 0; }
+.article.case p.cap { margin: -32px 0 48px; text-align: left; font-size: 15px; }
+.article.case ul { font-size: 18px; }
+.article.case .button { margin-top: 8px; }
+.case .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; padding: 48px 0; margin-bottom: 40px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.case .stat b { display: block; font-size: clamp(48px, 5vw, 72px); font-weight: 600; letter-spacing: -.03em; line-height: 1; color: var(--black); }
+.case .stat span { display: block; margin-top: 12px; font-size: 16px; color: var(--text-muted); }
+.case .stat.placeholder b { color: var(--rule); }
+.page.wide .article.case figure.todo { height: min(70vh, 720px); }
+.article figure.framed { display: grid; place-items: center; padding: 40px; background: var(--heygen-bg); }
+.article figure.framed .phone { width: min(260px, 70%); border-radius: 14% / 6.5%; }
+/* Stand-in for media that hasn't been supplied yet */
+.article figure.todo { display: grid; place-items: center; aspect-ratio: 16 / 10; border: 1px dashed var(--rule); color: var(--text-faint); font-size: 15px; }
+
+/* Wide case studies: copy keeps its 650px column, figures break out to the page edge
+   (48px from the viewport, 1440px max) — presentable full-screen on a laptop */
+.page.wide { width: min(1440px, 100% - 96px); container-type: inline-size; }
+.page.wide .site-header { margin-left: 0; }
+.page.wide .article { margin-left: auto; margin-right: auto; }
+.page.wide .article figure { width: 100cqw; margin-left: calc(50% - 50cqw); }
+.page.wide .article figure.framed { padding: 48px; }
+.page.wide .article figure.framed > :is(img, video) { width: auto; max-width: 100%; height: min(80vh, 900px); }
+.page.wide .article figure.framed .phone { height: min(78vh, 820px); }
+.page.wide .article figure.todo { aspect-ratio: auto; height: min(50vh, 480px); }
 /* Fanned-out screens: wider than the column. The top 11% of the image
    width is transparent, so it tucks up under the paragraph above. */
 .article figure.wide { margin-top: calc(24px - 0.11 * min(1129px, 100vw - 48px)); }
@@ -335,7 +416,7 @@ a:active .home-btn img.pressed { opacity: 1; }
 .bio .email { margin-top: 25px; font-size: 14px; color: var(--text-body); display: inline-flex; align-items: center; gap: 14px; }
 .bio .email svg { width: 20px; height: 20px; }
 .bio hr { border: 0; border-top: 1px solid var(--rule); margin: 64px 0 60px; }
-.bio h2 { font-size: 14px; color: var(--text-faint); margin: 0 0 32px; }
+.bio h2 { font-size: 14px; font-weight: 400; color: var(--text-faint); margin: 0 0 32px; }
 .bio dl { display: grid; gap: 28px 0; margin: 0 0 60px; }
 .bio dl:last-child { margin-bottom: 0; }
 .bio dl.timeline { grid-template-columns: 120px 1fr; }
@@ -371,8 +452,20 @@ a:active .home-btn img.pressed { opacity: 1; }
   .row { grid-template-columns: minmax(0, 1fr); gap: 16px; margin-bottom: 48px; }
   .row .copy { padding-top: 0; }
   .row .copy .eyebrow { margin-bottom: 14px; }
+  .row .media.framed:has(> .phone) { aspect-ratio: 1; }
   .article { font-size: 19px; }
+  .article h1 { font-size: 32px; }
+  .article figure.framed { padding: 24px; }
+  .page.wide { width: min(1440px, 100% - 32px); }
+  .page.wide .article figure.framed { padding: 24px; }
   .article figure img { width: min(var(--w, 100%), 100%); }
+  .page.wide .article.case { font-size: 17px; margin-top: 24px; }
+  .article.case h1 { margin-bottom: 32px; }
+  .case .overview, .case .facts, .case .stats { grid-template-columns: 1fr; }
+  .case .overview { gap: 32px; margin-bottom: 40px; }
+  .case section { margin-top: 64px; }
+  .case .stats { gap: 24px; padding: 32px 0; }
+  .page.wide .article.case figure.todo { height: min(40vh, 320px); }
   .bio { grid-template-columns: minmax(0, 1fr); margin-left: 0; gap: 28px; }
   .bio + .site-footer { margin-top: 48px; }
 }

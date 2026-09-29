@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prism Pyramid Playground | Nick Allen Dot Com</title>
+  <meta name="description" content="Play with the Home V4 prism pyramid: path, spin, tilt, glass, and the bugs we fixed along the way.">
+  <link rel="icon" href="images/icon-home-hover.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* The one page on the site with JavaScript: the mark is rebuilt and moved by script
+       so every value can be changed live. Everything else stays in styles.css. */
+    .play { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 32px; align-items: start; margin-top: 32px; }
+    .play-stage { position: sticky; top: 24px; display: grid; place-items: center; min-height: 560px; padding: 48px; background: var(--heygen-bg); }
+    #stage { width: 100%; display: grid; place-items: center; }
+    .play-panel { font-size: 14px; color: var(--text-body); }
+    .play-panel fieldset { border: 1px solid var(--rule); border-radius: 10px; margin: 0 0 12px; padding: 8px 12px 12px; }
+    .play-panel legend { font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); padding: 0 4px; }
+    .play-panel label { display: grid; grid-template-columns: 1fr 60px; gap: 2px 8px; margin: 8px 0; align-items: center; }
+    .play-panel label input[type=range] { grid-column: 1 / -1; width: 100%; accent-color: #22c3ff; }
+    .play-panel output { text-align: right; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+    .play-panel select { grid-column: 1 / -1; font: inherit; padding: 6px 8px; border: 1px solid var(--rule); border-radius: 8px; background: #fff; color: inherit; }
+    .btns { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0; }
+    .btns button { font: inherit; font-size: 13px; padding: 6px 12px; border: 1px solid var(--rule); border-radius: 999px; background: #fff; color: var(--text-body); cursor: pointer; }
+    .btns button:hover { border-color: var(--text-body); }
+    .btns button[aria-pressed=true] { background: var(--text-body); color: #fff; border-color: var(--text-body); }
+    .check { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
+    .check input { accent-color: #22c3ff; }
+    .note { font-size: 13px; color: var(--text-muted); margin: 4px 0 0; }
+
+    /* HeyGen's own type for the stand-in cards: subsets holding only the glyphs used here */
+    @font-face { font-family: "ABC Solar Display"; font-weight: 800; src: url("fonts/ABCSolarDisplay-Bold.subset.woff2") format("woff2"); font-display: swap; }
+    @font-face { font-family: "TT Norms Pro"; font-weight: 600; src: url("fonts/TTNormsPro-DemiBold.subset.woff2") format("woff2"); font-display: swap; }
+
+    /* stages: a sandbox for the mark, not a re-creation of the product */
+    .pg-card { position: relative; overflow: hidden; border-radius: 24px; color: #fff;
+      background: linear-gradient(91deg, #14142d, #335561); font-family: "TT Norms Pro", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 13px; }
+    .pg-tile { width: min(460px, 100%); aspect-ratio: 460 / 260; }
+    .pg-tile::before { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(to bottom, transparent, rgb(8 10 18 / .45)); }
+    .pg-banner { width: min(920px, 100%); height: 180px; border-radius: 22px; }
+    .pg-free { width: min(520px, 100%); aspect-ratio: 1; overflow: visible; background: transparent; }
+    .pg-tile-ui { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 14px; padding-bottom: 13%; }
+    .pg-plus { width: 40px; height: 40px; border-radius: 50%; border: 3px solid #fff; display: grid; place-items: center; font: 600 26px/1 "TT Norms Pro", ui-sans-serif, system-ui; }
+    .pg-pill { border-radius: 999px; padding: 9px 16px; font-weight: 600; color: #fff; background: rgb(255 255 255 / .15); border: 1px solid rgb(255 255 255 / .22); backdrop-filter: blur(10px); cursor: pointer; transition: transform .2s, background .2s; }
+    .pg-pill:hover { transform: scale(1.05); background: rgb(255 255 255 / .28); }
+    .pg-pill.brand { background: rgb(0 170 230 / .35); }
+    .pg-text { position: absolute; z-index: 3; left: 28px; top: 50%; transform: translateY(-50%); display: flex; gap: 20px; align-items: center; }
+    .pg-avatar { width: 88px; height: 88px; border-radius: 50%; background: #00c2ff; flex: none; }
+    .pg-eyebrow { font-weight: 600; font-size: 14px; } .pg-eyebrow b { color: #22c3ff; font-weight: 600; }
+    .pg-title { font: 800 30px/1.1 "ABC Solar Display", ui-sans-serif, system-ui; letter-spacing: -.02em; margin: 4px 0 8px; }
+    .pg-status { display: inline-flex; gap: 6px; align-items: center; color: #22c3ff; background: rgb(0 170 230 / .2); border-radius: 999px; padding: 5px 12px; font-size: 12px; font-weight: 600; }
+    .pg-status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #22c3ff; }
+    .pg-cta { position: absolute; z-index: 3; right: 28px; top: 50%; transform: translateY(-50%); display: flex; gap: 8px; align-items: center; }
+    .pg-safe { position: absolute; z-index: 2; left: 0; top: 0; bottom: 0; pointer-events: none; background: repeating-linear-gradient(45deg, rgb(255 80 80 / .12) 0 8px, transparent 8px 16px); border-right: 1px dashed rgb(255 110 110 / .6); }
+    .pg-trace { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; overflow: visible; }
+
+    /* the mark */
+    .pg-orbit { position: absolute; will-change: transform; transition: filter .3s ease; pointer-events: none; z-index: 0; }
+    .pg-scene { width: 100%; height: 100%; }
+    .pg-tilt, .pg-pyr, .pg-wing, .pg-face { transform-style: preserve-3d; }
+    .pg-tilt, .pg-pyr { width: 100%; height: 100%; position: relative; }
+    .pg-wing { position: absolute; inset: 0; }
+    .pg-face { position: absolute; left: 0; top: 50%; width: 100%; height: 50%; transform-origin: 50% 100%; }
+    .pg-face svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
+
+    @media (max-width: 1100px) {
+      .play { grid-template-columns: 1fr; }
+      .play-stage { position: static; min-height: 0; padding: 24px 16px; }
+      .pg-banner { height: 160px; } .pg-text { left: 16px; gap: 12px; } .pg-avatar { width: 56px; height: 56px; } .pg-title { font-size: 20px; } .pg-status { display: none; }
+      .pg-cta { right: 16px; } .pg-cta .pg-pill:first-child { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="gate">
+  <label for="gate-key">This page is password protected.</label>
+  <input id="gate-key" type="password" pattern="HeyGen123!" required autocomplete="off" autofocus>
+</div>
+<main class="page wide">
+
+  <header class="site-header">
+    <a href="index.html"><span class="home-btn"><img class="rest" src="images/icon-home.png" alt=""><img class="hover" src="images/icon-home-hover.png" alt=""><img class="pressed" src="images/icon-home-pressed.png" alt=""></span>take me home, country roads</a>
+  </header>
+
+  <article class="article">
+    <p class="crumbs"><a href="heygen-projects.html">HeyGen</a> • <a href="heygen-home-v4.html">Home V4</a> • Playground</p>
+    <h1>Prism Pyramid playground</h1>
+    <p class="kicker">Every value we tuned, live</p>
+    <p>This is the real component, rebuilt so you can turn the knobs. Pick a stage, drag the sliders, and try the replays to see the bugs we hit along the way. Hover the button on the card to freeze and frost it. It's a sandbox, not the product: the cards are stand-ins.</p>
+  </article>
+
+  <div class="play">
+    <div class="play-stage"><div id="stage"></div></div>
+
+    <aside class="play-panel" aria-label="Playground controls">
+      <fieldset><legend>Stage</legend>
+        <div class="btns" id="stageBtns">
+          <button type="button" data-stage="tile" aria-pressed="true">Create tile</button>
+          <button type="button" data-stage="banner" aria-pressed="false">Onboarding banner</button>
+          <button type="button" data-stage="free" aria-pressed="false">Free space</button>
+        </div>
+        <div class="btns"><button type="button" id="playBtn" aria-pressed="true">Pause</button><button type="button" id="reset">Reset to shipped</button></div>
+        <label>Time <output id="o-scrub"></output><input id="scrub" type="range" min="0" max="1" step="0.001" value="0"></label>
+        <div class="check"><input id="trace" type="checkbox" checked><label for="trace">Show the path</label></div>
+        <div class="check"><input id="safe" type="checkbox" checked><label for="safe">Show the text-safe zone (banner)</label></div>
+      </fieldset>
+
+      <fieldset><legend>Replays</legend>
+        <div class="btns" id="replayBtns">
+          <button type="button" data-replay="flat">Flat logo</button>
+          <button type="button" data-replay="halo">Sub-pixel orbit</button>
+          <button type="button" data-replay="twosheet">Two-sheet glass</button>
+          <button type="button" data-replay="overshoot">Tilt overshoot</button>
+          <button type="button" data-replay="chords">13 samples</button>
+          <button type="button" data-replay="pulse">Per-segment easing</button>
+        </div>
+        <p class="note" id="replayNote">Each one sets the controls to a mistake we made, so you can see why the shipped value is what it is.</p>
+      </fieldset>
+
+      <fieldset><legend>Path</legend>
+        <label>Mode
+          <select id="mode">
+            <option value="ellipse">Ellipse (tile)</option>
+            <option value="horseshoe">Horseshoe (banner)</option>
+          </select>
+        </label>
+        <label>X amplitude (% of mark) <output></output><input id="rx" type="range" min="0" max="120" step="1"></label>
+        <label>Y amplitude (% of mark) <output></output><input id="ry" type="range" min="0" max="80" step="1"></label>
+        <label>Horseshoe span (±°) <output></output><input id="span" type="range" min="30" max="180" step="1"></label>
+        <label>Samples <output></output><input id="samples" type="range" min="3" max="120" step="1"></label>
+        <label>Easing
+          <select id="easing">
+            <option value="spaced">Cosine-spaced samples, linear track (shipped)</option>
+            <option value="segment">Per-segment ease-in-out (pulses)</option>
+            <option value="uniform">Uniform samples, linear track</option>
+          </select>
+        </label>
+        <label>Sweep duration (s) <output></output><input id="lap" type="range" min="3" max="120" step="1"></label>
+      </fieldset>
+
+      <fieldset><legend>Object</legend>
+        <label>Mark size (px) <output></output><input id="size" type="range" min="100" max="600" step="2"></label>
+        <label>Fold (°), 0 = the flat logo <output></output><input id="fold" type="range" min="0" max="75" step="1"></label>
+        <label>Resting tilt (°) <output></output><input id="tilt" type="range" min="0" max="80" step="1"></label>
+        <label>Tilt sway (±°) <output></output><input id="sway" type="range" min="0" max="20" step="1"></label>
+        <label>Tilt sway period (s) <output></output><input id="swayT" type="range" min="3" max="60" step="1"></label>
+        <label>Spin period (s) <output></output><input id="spin" type="range" min="4" max="200" step="1"></label>
+        <label>Perspective (px) <output></output><input id="persp" type="range" min="300" max="3000" step="50"></label>
+      </fieldset>
+
+      <fieldset><legend>Glass</legend>
+        <label>Slab depth (px) <output></output><input id="depth" type="range" min="0" max="24" step="0.5"></label>
+        <label>Sheet count <output></output><input id="sheets" type="range" min="1" max="15" step="1"></label>
+        <label>Explode (×) <output></output><input id="explode" type="range" min="1" max="12" step="0.5"></label>
+        <label>Sheen (lighten) <output></output><input id="sheen" type="range" min="0" max="1" step="0.05"></label>
+        <label>Hover frost blur (px) <output></output><input id="blur" type="range" min="0" max="60" step="1"></label>
+      </fieldset>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="social">
+      <a href="https://www.snapchat.com/add/nick_allen" target="_blank" rel="noopener" aria-label="Snapchat"><img src="images/icon-snapchat.png" alt=""></a>
+      <a href="https://www.linkedin.com/in/nick-allen-2a20222b/" target="_blank" rel="noopener" aria-label="LinkedIn"><img src="images/icon-linkedin.png" alt=""></a>
+      <a href="https://www.instagram.com/nichorasss/" target="_blank" rel="noopener" aria-label="Instagram"><img src="images/icon-instagram.png" alt=""></a>
+    </div>
+    <a class="home" href="index.html" aria-label="Home"><span class="home-btn"><img class="rest" src="images/icon-home.png" alt=""><img class="hover" src="images/icon-home-hover.png" alt=""><img class="pressed" src="images/icon-home-pressed.png" alt=""></span></a>
+  </footer>
+
+</main>
+
+<script>
+/* ---------- shipped values ---------- */
+const PRESETS = {
+  tile:   { mode: 'ellipse',   rx: 50, ry: 38, span: 115, samples: 61, easing: 'spaced', lap: 48, size: 384, blur: 32 },
+  banner: { mode: 'horseshoe', rx: 69, ry: 35, span: 115, samples: 61, easing: 'spaced', lap: 26, size: 270, blur: 24 },
+  free:   { mode: 'ellipse',   rx: 30, ry: 20, span: 115, samples: 61, easing: 'spaced', lap: 48, size: 320, blur: 32 },
+};
+const SHARED = { fold: 32, tilt: 42, sway: 4, swayT: 18, spin: 50, persp: 1100, depth: 7, sheets: 7, explode: 1, sheen: 0.4 };
+/* the mistakes, as settings */
+const REPLAYS = {
+  flat:      { note: 'Fold 0° is the logo redrawn from overhead. Tilt it and it stays one flat card.', set: { fold: 0 } },
+  halo:      { note: 'An 18px halo on a 48s clock: under a pixel per second. Moving, but you can’t tell.', stage: 'banner', set: { rx: 7, ry: 3.5, lap: 48 } },
+  twosheet:  { note: 'Two sheets 7px apart. At a steep camera you see straight through the slit.', set: { sheets: 2, tilt: 56, sway: 0 } },
+  overshoot: { note: 'Tilt swaying up to 52°. 52 + 32 (the fold) = 84°, nearly edge-on: the near petal shows its slices.', set: { tilt: 42, sway: 10, swayT: 6 } },
+  chords:    { note: '13 samples on the horseshoe. You can count the straight chords between them.', stage: 'banner', set: { samples: 13 } },
+  pulse:     { note: 'Easing applied per segment. CSS eases every chord, so it pulses at each sample.', stage: 'banner', set: { samples: 13, easing: 'segment' } },
+};
+
+const FACES = [
+  { id: 's', from: '#FDA1FF', to: '#97C5FF', rot: 0 },
+  { id: 'w', from: '#4FDB5E', to: '#00CDC2', rot: 90 },
+  { id: 'n', from: '#B78EFA', to: '#97C5FF', rot: 180 },
+  { id: 'e', from: '#3CE6AC', to: '#00E3FF', rot: 270 },
+];
+const PETAL = 'M42 84 L158 84 L109 30 Q100 21 91 30 Z';
+const RIM_STOPS = [[0, .7], [.22, .12], [.48, .45], [.75, .06], [1, .3]];
+
+const state = { stage: 'tile', ...PRESETS.tile, ...SHARED };
+let playing = true, hovering = false, t = 0, last = performance.now();
+
+function lighten(hex, a) {
+  return '#' + [1, 3, 5].map(i => {
+    const v = parseInt(hex.slice(i, i + 2), 16);
+    return Math.round(v + (255 - v) * a).toString(16).padStart(2, '0');
+  }).join('');
+}
+const path = (fill, stroke, sw = 18, extra = '') =>
+  `<path d="${PETAL}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" ${extra}/>`;
+const grad = (id, stops, x1 = 0, y1 = 1, x2 = 1, y2 = 0) =>
+  `<linearGradient id="${id}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}">${stops}</linearGradient>`;
+
+/* One face = N stacked SVG sheets: back (darkest) … mids … front (rim sliver under the opaque surface). */
+function faceHTML(f, uid) {
+  const n = Math.max(1, state.sheets);
+  const layers = [];
+  for (let i = n - 1; i >= 0; i--) {
+    const g = `${uid}-${f.id}-${i}`;
+    const z = n === 1 ? 0 : -(state.depth * state.explode) * (i / (n - 1));
+    const style = `style="transform: translateZ(${z}px)"`;
+    if (i === 0) {
+      layers.push(`<svg viewBox="0 0 200 100" ${style}><defs>
+        ${grad(g, `<stop stop-color="${f.from}"/><stop offset=".6" stop-color="${f.to}"/><stop offset="1" stop-color="${lighten(f.to, state.sheen)}"/>`)}
+        ${grad(g + 'r', RIM_STOPS.map(([o, a]) => `<stop offset="${o}" stop-color="#fff" stop-opacity="${a}"/>`).join(''), 0, 0, 1, 1)}
+      </defs>${path(`url(#${g})`, `url(#${g}r)`, 18)}${path(`url(#${g})`, `url(#${g})`, 15)}</svg>`);
+    } else {
+      const shade = 0.3 * (i / (n - 1));
+      layers.push(`<svg viewBox="0 0 200 100" ${style}><defs>${grad(g, `<stop stop-color="${f.from}"/><stop offset="1" stop-color="${f.to}"/>`)}</defs>
+        ${path(`url(#${g})`, `url(#${g})`)}${path('#000', '#000', 18, `opacity="${shade}"`)}</svg>`);
+    }
+  }
+  return layers.join('');
+}
+
+let uidCounter = 0;
+function buildMark() {
+  const uid = 'p' + (uidCounter++);
+  return `<div class="pg-scene"><div class="pg-tilt"><div class="pg-pyr">
+    ${FACES.map(f => `<div class="pg-wing" style="transform: rotateZ(${f.rot}deg)"><div class="pg-face">${faceHTML(f, uid)}</div></div>`).join('')}
+  </div></div></div>`;
+}
+
+/* ---------- stage ---------- */
+const stageEl = document.getElementById('stage');
+let card, orbit, traceSvg, safeZone, ctaEl;
+
+function buildStage() {
+  const mark = `<div class="pg-orbit">${buildMark()}</div><svg class="pg-trace"></svg>`;
+  if (state.stage === 'tile') {
+    stageEl.innerHTML = `<div class="pg-card pg-tile">${mark}
+      <div class="pg-tile-ui"><span class="pg-plus">+</span><span class="pg-pill" id="cta">Create new video</span></div></div>`;
+  } else if (state.stage === 'banner') {
+    stageEl.innerHTML = `<div class="pg-card pg-banner">${mark}<div class="pg-safe"></div>
+      <div class="pg-text"><span class="pg-avatar"></span><div>
+        <div class="pg-eyebrow">Step 2: <b>Motion</b></div><div class="pg-title">Nick Allen</div>
+        <span class="pg-status">Make your avatar perfectly you!</span></div></div>
+      <div class="pg-cta" id="cta"><span class="pg-pill">Add voice only</span><span class="pg-pill brand">Add Motion</span></div></div>`;
+  } else {
+    stageEl.innerHTML = `<div class="pg-card pg-free">${mark}</div>`;
+  }
+  card = stageEl.querySelector('.pg-card');
+  orbit = stageEl.querySelector('.pg-orbit');
+  traceSvg = stageEl.querySelector('.pg-trace');
+  safeZone = stageEl.querySelector('.pg-safe');
+  ctaEl = stageEl.querySelector('#cta');
+  const frost = on => { hovering = on; orbit.style.filter = on ? `blur(${state.blur}px)` : ''; };
+  if (ctaEl) { ctaEl.addEventListener('mouseenter', () => frost(true)); ctaEl.addEventListener('mouseleave', () => frost(false)); }
+  if (state.stage === 'tile') { card.addEventListener('mouseenter', () => frost(true)); card.addEventListener('mouseleave', () => frost(false)); }
+  layout();
+}
+
+/* Anchor = the mark's centre in card px. Tile and free: card centre. Banner: right 20px, vertically centred. */
+function anchor() {
+  const w = card.clientWidth, h = card.clientHeight, s = state.size;
+  return state.stage === 'banner' ? [w - 20 - s / 2, h / 2] : [w / 2, h / 2];
+}
+
+function layout() {
+  const s = state.size;
+  orbit.style.width = orbit.style.height = s + 'px';
+  stageEl.querySelector('.pg-scene').style.perspective = state.persp + 'px';
+  stageEl.querySelectorAll('.pg-face').forEach(f => f.style.transform = `rotateX(${-state.fold}deg)`);
+  if (safeZone) {
+    safeZone.style.display = document.getElementById('safe').checked ? '' : 'none';
+    const text = stageEl.querySelector('.pg-text');
+    safeZone.style.width = (text.offsetLeft + text.offsetWidth + 16) + 'px';
+  }
+  drawTrace();
+}
+
+/* ---------- motion model: position as a fraction of the mark size ---------- */
+function arcSamples() {
+  const n = Math.max(2, state.samples - 1), pts = [];
+  for (let k = 0; k <= n; k++) {
+    const tk = k / n;
+    const f = state.easing === 'uniform' ? tk : (1 - Math.cos(Math.PI * tk)) / 2;
+    const th = (-state.span + 2 * state.span * f) * Math.PI / 180;
+    pts.push([state.rx / 100 * Math.cos(th), state.ry / 100 * Math.sin(th)]);
+  }
+  return pts;
+}
+let samplesCache = null;
+function horseshoeAt(u) {
+  const pts = samplesCache || (samplesCache = arcSamples());
+  const seg = pts.length - 1, x = u * seg, i = Math.min(seg - 1, Math.floor(x));
+  let f = x - i;
+  if (state.easing === 'segment') f = f * f * (3 - 2 * f);   // CSS ease-in-out, applied per keyframe segment
+  return [pts[i][0] + (pts[i + 1][0] - pts[i][0]) * f, pts[i][1] + (pts[i + 1][1] - pts[i][1]) * f];
+}
+/* Tile: nested alternate ease-in-out tracks, Y a quarter period behind → x ≈ cos, y ≈ sin. */
+function ellipseAt(time) {
+  const T = state.lap, ease = p => { const tri = 1 - Math.abs(((p % 2) + 2) % 2 - 1); return tri * tri * (3 - 2 * tri); };
+  return [state.rx / 100 * (2 * ease(time / T) - 1), state.ry / 100 * (2 * ease((time + T / 2) / T) - 1)];
+}
+function positionAt(time) {
+  if (state.mode === 'ellipse') return ellipseAt(time);
+  const p = ((time / state.lap) % 2 + 2) % 2;          // alternate: 0→1→0
+  return horseshoeAt(p <= 1 ? p : 2 - p);
+}
+
+function drawTrace() {
+  if (!document.getElementById('trace').checked) { traceSvg.innerHTML = ''; return; }
+  const [ax, ay] = anchor(), s = state.size, steps = 400, span = state.mode === 'ellipse' ? state.lap * 2 : state.lap;
+  let d = '';
+  for (let i = 0; i <= steps; i++) {
+    const [fx, fy] = positionAt(span * i / steps);
+    d += (i ? 'L' : 'M') + (ax + fx * s).toFixed(1) + ' ' + (ay + fy * s).toFixed(1);
+  }
+  const dots = state.mode === 'horseshoe'
+    ? arcSamples().map(([fx, fy]) => `<circle cx="${ax + fx * s}" cy="${ay + fy * s}" r="2" fill="#9fd8ff" opacity=".7"/>`).join('') : '';
+  traceSvg.innerHTML = `<path d="${d}" fill="none" stroke="#9fd8ff" stroke-width="1.2" stroke-dasharray="3 4" opacity=".75"/>${dots}
+    <circle id="dot" r="5" fill="#fff" stroke="#0af" stroke-width="2"/>`;
+}
+
+function frame(now) {
+  const dt = (now - last) / 1000; last = now;
+  if (playing && !hovering) t += dt;
+  const s = state.size, [ax, ay] = anchor(), [fx, fy] = positionAt(t);
+  orbit.style.transform = `translate(${ax - s / 2 + fx * s}px, ${ay - s / 2 + fy * s}px)`;
+  const sway = Math.sin(2 * Math.PI * t / (2 * state.swayT));
+  stageEl.querySelector('.pg-tilt').style.transform = `rotateX(${state.tilt + state.sway * sway}deg)`;
+  stageEl.querySelector('.pg-pyr').style.transform = `rotateZ(${(t / state.spin) * 360 % 360}deg)`;
+  const dot = traceSvg.querySelector('#dot');
+  if (dot) { dot.setAttribute('cx', ax + fx * s); dot.setAttribute('cy', ay + fy * s); }
+  if (playing) document.getElementById('scrub').value = (t % (state.lap * 2)) / (state.lap * 2);
+  document.getElementById('o-scrub').textContent = t.toFixed(1) + 's';
+  requestAnimationFrame(frame);
+}
+
+/* ---------- controls ---------- */
+const KEYS = ['rx', 'ry', 'span', 'samples', 'lap', 'size', 'fold', 'tilt', 'sway', 'swayT', 'spin', 'persp', 'depth', 'sheets', 'explode', 'sheen', 'blur'];
+const REBUILD = new Set(['depth', 'sheets', 'explode', 'sheen']);
+function syncControls() {
+  for (const k of KEYS) {
+    const el = document.getElementById(k); el.value = state[k];
+    el.previousElementSibling.textContent = state[k];
+  }
+  document.getElementById('mode').value = state.mode;
+  document.getElementById('easing').value = state.easing;
+}
+for (const k of KEYS) {
+  document.getElementById(k).addEventListener('input', e => {
+    state[k] = +e.target.value; e.target.previousElementSibling.textContent = state[k];
+    samplesCache = null;
+    if (REBUILD.has(k)) buildStage(); else layout();
+  });
+}
+document.getElementById('mode').addEventListener('change', e => { state.mode = e.target.value; samplesCache = null; layout(); });
+document.getElementById('easing').addEventListener('change', e => { state.easing = e.target.value; samplesCache = null; layout(); });
+document.getElementById('trace').addEventListener('change', layout);
+document.getElementById('safe').addEventListener('change', layout);
+document.getElementById('scrub').addEventListener('input', e => { playing = false; setPlay(); t = +e.target.value * state.lap * 2; });
+function setPlay() { const b = document.getElementById('playBtn'); b.textContent = playing ? 'Pause' : 'Play'; b.setAttribute('aria-pressed', playing); }
+document.getElementById('playBtn').addEventListener('click', () => { playing = !playing; setPlay(); });
+
+function setStage(name) {
+  document.querySelectorAll('#stageBtns button').forEach(x => x.setAttribute('aria-pressed', x.dataset.stage === name));
+  Object.assign(state, { stage: name }, PRESETS[name]); samplesCache = null;
+}
+document.querySelectorAll('#stageBtns button').forEach(b => b.addEventListener('click', () => {
+  setStage(b.dataset.stage); Object.assign(state, SHARED); syncControls(); buildStage();
+  document.getElementById('replayNote').textContent = 'Each one sets the controls to a mistake we made, so you can see why the shipped value is what it is.';
+}));
+document.querySelectorAll('#replayBtns button').forEach(b => b.addEventListener('click', () => {
+  const r = REPLAYS[b.dataset.replay];
+  setStage(r.stage || state.stage); Object.assign(state, SHARED, r.set); samplesCache = null;
+  syncControls(); buildStage();
+  document.getElementById('replayNote').textContent = r.note;
+}));
+document.getElementById('reset').addEventListener('click', () => {
+  Object.assign(state, PRESETS[state.stage], SHARED); samplesCache = null; syncControls(); buildStage();
+});
+window.addEventListener('resize', layout);
+
+syncControls(); buildStage(); requestAnimationFrame(frame);
+</script>
+</body>
+</html>
